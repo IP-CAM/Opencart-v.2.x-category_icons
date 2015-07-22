@@ -1,0 +1,56 @@
+<!-- Created using vQmod XML Generator by UKSB - http://uksb.github.com/vqgen/ //-->
+<modification>
+	<id><![CDATA[Category Icons Module]]></id>
+	<version><![CDATA[1.0]]></version>
+	<vqmver><![CDATA[2.x]]></vqmver>
+	<author><![CDATA[cristiano-acosta [https://github.com/cristiano-acosta]]]></author>
+	<file name="admin/model/catalog/category.php">
+		<operation>
+			<search position="replace"><![CDATA[      $this->db->query("INSERT INTO " . DB_PREFIX . "category_description SET category_id = '" . (int)$category_id . "', language_id = '" . (int)$language_id . "', name = '" . $this->db->escape($value['name']) . "', description = '" . $this->db->escape($value['description']) . "', meta_title = '" . $this->db->escape($value['meta_title']) . "', meta_description = '" . $this->db->escape($value['meta_description']) . "', meta_keyword = '" . $this->db->escape($value['meta_keyword']) . "'");      ]]></search>
+			<add><![CDATA[		//Q: Insert DB columns
+		$query = $this->db->query("DESC ".DB_PREFIX."category_description");
+    		if (!$query->num_rows) {
+			$this->db->query("ALTER TABLE '" . DB_PREFIX . "category_description' ADD 'icon' VARCHAR(255) not null after 'name' default 'fa-close'");
+
+		}
+	//insert data     
+	$this->db->query("INSERT INTO " . DB_PREFIX . "category_description SET category_id = '" . (int)$category_id . "', language_id = '" . (int)$language_id . "', name = '" . $this->db->escape($value['name']) . "', icon = '" . $this->db->escape($value['icon']) . "', description = '" . $this->db->escape($value['description']) . "', meta_title = '" . $this->db->escape($value['meta_title']) . "', meta_description = '" . $this->db->escape($value['meta_description']) . "', meta_keyword = '" . $this->db->escape($value['meta_keyword']) . "'");]]></add>
+		</operation>
+		<operation>
+			<search position="after"><![CDATA['meta_keyword'     => $result['meta_keyword'],]]></search>
+			<add><![CDATA['icon'     => $result['icon'],]]></add>
+		</operation>
+	</file>
+	<file name="admin/controller/catalog/category.php">
+		<operation>
+			<search position="after"><![CDATA[$data['tab_design'] = $this->language->get('tab_design');]]></search>
+			<add><![CDATA[        $data['entry_icon'] = $this->language->get('entry_icon');]]></add>
+		</operation>
+		<operation>
+			<search position="after"><![CDATA[$data['placeholder'] = $this->model_tool_image->resize('no_image.png', 100, 100);]]></search>
+			<add><![CDATA[		if (isset($this->request->post['icon'])) { 
+				$data['icon'] = $this->request->post['icon'];
+		} elseif (!empty($category_info)) {
+				$data['icon'] = $category_info['icon'];
+		} else {
+				$data['icon'] = 'fa-close';
+		}]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA['sort_order'  => $result['sort_order'],]]></search>
+			<add><![CDATA[        'icon'  => $result['icon'],]]></add>
+		</operation>
+    <operation>
+			<search position="before"><![CDATA[$this->response->setOutput($this->load->view('catalog/category_form.tpl', $data));]]></search>
+			<add><![CDATA[$this->response->setOutput($this->load->view('catalog/category_form_new.tpl', $data));]]></add>
+		</operation>
+
+	</file>
+	<file name="admin/language/portuguese-br/catalog/category.php">
+		<operation>
+			<search position="after"><![CDATA[$_['entry_layout']           = 'Layout substituto';]]></search>
+			<add><![CDATA[ $_['entry_icon'] = 'Ícone'; ]]></add>
+		</operation>
+	</file>
+
+</modification>
